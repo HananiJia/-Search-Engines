@@ -1,5 +1,5 @@
 #include"searcher.h"
-
+#if 0
 int main(){
     searcher::Index index;
     bool ret=index.Build("../data/tmp/raw_input");
@@ -18,5 +18,18 @@ int main(){
        std::cout<<"title"<<doc_info->title<<std::endl;
        std::cout<<"url"<<doc_info->url<<std::endl;       
     }
+    return 0;
+}
+#endif
+int main() {
+     searcher::Searcher searcher;
+     bool ret= searcher.Init("../data/tmp/raw_input");
+     if (!ret){
+     return 1;
+     }
+     std::string query ="filesystem";
+     std::string result;
+     searcher.Search(query,&result);
+     std::cout<<"result"<<result;
     return 0;
 }

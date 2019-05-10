@@ -11,11 +11,12 @@ namespace searcher {
         std::string content;
         std::string url;
     };
-    struct Weigth{
+    struct Weight{
       uint64_t doc_id;
-      int weigth;
+      int weight;
+      std::string key;
     };
-    typedef std::vector<Weigth> InvertedList;
+    typedef std::vector<Weight> InvertedList;
     class Index {
         private:
             std::vector<DocInfo> forward_index_;
@@ -34,9 +35,14 @@ namespace searcher {
     class Searcher {
      private:
          Index* index_;
-
+         std::string GetDesc(const std::string& content,const std::string& key);    
      public:
-     bool Init();    
+         Searcher():index_(new Index()){
+         }
+         ~Searcher(){
+          delete index_;
+         }
+     bool Init(const std::string& input_path);    
      bool Search(const std::string& query,std::string* result);
 
     };
