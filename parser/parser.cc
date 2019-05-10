@@ -11,7 +11,7 @@
 #include<fstream>
 #include<boost/filesystem/path.hpp>
 #include<boost/filesystem/operations.hpp>
-#include<../commom/util.hpp>
+#include"../commom/util.hpp"
 using namespace std;
 
 const std::string g_input_path ="../data/input/";
@@ -87,7 +87,7 @@ bool ParseContent(const string& html,string* content){
    return true;
 }
 //https://www.boost.org/doc/libs/1_53_0/doc/
-bool ParseUrl(const string& html,string* url){
+bool ParseUrl(const string& file_path,string* url){
    string prefix="https://www.boost.org/doc/libs/1_53_0/doc/";
    string tail=file_path.substr(g_input_path.size());
    *url=prefix+tail;
@@ -111,6 +111,7 @@ bool ParseFile(const string& file_path,DocInfo* doc_info) {
    ret=ParseContent(html,&doc_info->content);
    if(!ret){
     cout<<"ParseContent failed! file_path="<<file_path<<endl;
+    return false;
    }
    //4.解析出url
    ret=ParseUrl(file_path,&doc_info->url);
@@ -120,21 +121,26 @@ bool ParseFile(const string& file_path,DocInfo* doc_info) {
    }
    return true;
 }
+void WriteOutput(const DocInfo& doc_info,ofstream& file){
+    string line=doc_info.title+"\3"+doc_info.url+"\3"+doc_info.content+"\n";
+    file.write(line.c_str(),line.size());
+}
 int main(){
     //1.枚举出输入路径中所有html的路径
     std::vector<std::string> file_list;
     bool ret=EnumFile(g_input_path,&file_list);
-    if(!ret){o
+    if(!ret){
         cout<<"EnumFile failed!"<<endl;
         return 1;
     }
     //验证 Enumfile是不是正确的 
-   for (const auto& file_path:file_list){
-	   cout<<file_path<<endl;
-   }
+  // for (const auto& file_path:file_list){
+//	   cout<<file_path<<endl;
+  // }
     ofstream output_file(g_output_path.c_str());
     if (!output_file.is_open()){
         cout<<"open output_file failed! g_output_path="<<g_output_path<<endl;
+    }
     //2.依次处理每个枚举出的路径，对该文档进行分析，分析出文件的标题 正文和URL并且进行去标签处理
     for (const auto& file_path:file_list) {
             DocInfo info;
@@ -144,10 +150,13 @@ int main(){
             if(!ret){
                 cout<<"ParseFile failed file_path="<<file_path<<endl;
                 continue;
-    }
+   	 }
+	    cout<<info.url<<" "<<info.title<<endl;
     //3.把分析结果按照一行的形式写入到输出文件
      WriteOutput(info,output_file);
     }
     output_file.close();
     return 0;
 }
+
+

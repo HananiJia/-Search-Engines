@@ -1,6 +1,8 @@
 #pragma once
 #include<string>
 #include<fstream>
+#include<vector>
+#include<boost/algorithm/string.hpp>
 class FileUtil {
 	public:
 		static bool Read(const std::string& file_path,
@@ -11,7 +13,7 @@ class FileUtil {
 			}
 		std::string line;
 		while(std::getline(file,line)){
-			*content+=line+"\n"
+			*content+=line+"\n";
 		}
 		file.close();
 		return true;
@@ -21,8 +23,16 @@ class FileUtil {
 			if(!file.is_open()){
 				return false;
 			}
-			file.write(content.c_str(),contetnt,size());
+			file.write(content.c_str(),content.size());
 			file.close();
 			return true;
 		}
 };
+class StringUtil{
+public:
+    static void Split(const std::string& input,std::vector<std::string>* output,const std::string& split_char){
+     boost::split(*output,input,boost::is_any_of(split_char),boost::token_compress_off);
+    }
+};
+
+
